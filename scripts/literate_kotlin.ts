@@ -24,7 +24,7 @@ export const literateKtConfig = {
     _for: (id:string) => ` for ${id.bold()}`,
     dependsOn: (deps: Array<string>) => ` depends on ${preetyShowList(deps.map(t => t.bold().italics()))}`,
     expectingFor: (what:any, that:any) => `Expecting ${what} for ${that}`,
-    adjNounDesc: (adj:string, noun:string, desc:string) => `${adj} ${noun}${desc}`
+    nounNounDesc: (noun0:string, noun1:string, desc:string) => `${noun0} ${noun1}${desc}`
   },
   dependencyOrdered: false
 };
@@ -71,7 +71,7 @@ function read<T>(p: Predicate<T>, s: Peek<T>) {
 
 export function enableCodeFilter(begin_e: Element) {
   const { playgroundDefaults } = literateKtConfig;
-  const { adjNounDesc } = literateKtConfig.texts;
+  const { nounNounDesc: adjNounDesc } = literateKtConfig.texts;
   const { playgroundClass: playground, hiddenDependencyClass: hiddenDependency,
     KotlinPlaygroundGlobalId: KotlinPlayground } = literateKtMagics;
 

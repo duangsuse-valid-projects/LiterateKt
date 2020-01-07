@@ -47,22 +47,23 @@ export function flatten<T>(xss: Array<Array<T>>): Array<T> {
   for (let xs of xss) flat.push(...xs);
   return flat;
 }
+/** Preorder walk of dependency tree, circular dependencies is not allowed. */
 export function deepDependencies<T>(node: T, links: Links<T>): Array<T> {
   let dependencies: Array<T> = [...links(node)];
   if (is.empty(dependencies)) return []; //base:no-dependency
   else return flatten(dependencies.map(eDep => deepDependencies(eDep, links).concat(eDep)));
 }
 export function flatDependencies<T>(root: T, links: Links<T>): Array<T> {
-  let bfsQueue: Array<T> = [...links(root)];
+  let addWithDepTodo: Array<T> = [...links(root)]; //data:bfs-queue
   let dependencySet: Set<T> = new Set();
-  while (is.notEmpty(bfsQueue)) {
-    let someNode = bfsQueue.shift();
+  while (is.notEmpty(addWithDepTodo)) {
+    let someNode = addWithDepTodo.shift();
     if (dependencySet.has(someNode)) {
-      continue; // skip cyclic deps like a-b
+      continue; // skip circular deps like a-b
     } else {
       dependencySet.add(someNode);
       let itsDepencencies = links(someNode);
-      bfsQueue.push(...itsDepencencies);
+      addWithDepTodo.push(...itsDepencencies);
     }
   }
   return [...dependencySet.values()];
