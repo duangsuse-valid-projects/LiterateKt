@@ -60,7 +60,7 @@ export function configured(...config: Array<ElementConfig>): ElementConfig {
   return e => { for (let cfg of config) cfg(e); };
 }
 
-export { withDefaults, withClasses, withAttributes, withText }
+export { withDefaults, withClasses, withAttributes, withText, withInnerHTML }
 const withDefaults: ElementConfig = e => {};
 const withClasses: (...cssClass:Array<string>) => ElementConfig
   = (...cssClasses) => (e => e.classList.add(...cssClasses));
@@ -68,3 +68,5 @@ const withAttributes: (attribute:Object) => ElementConfig
   = (attribute) => (e => assignElementAttribute(e, attribute));
 const withText: (text:string) => ElementConfig
   = text => (e => { e.textContent = text; });
+const withInnerHTML: (htmlCode:string) => ElementConfig
+  = htmlCode => (e => { e.innerHTML = htmlCode; });

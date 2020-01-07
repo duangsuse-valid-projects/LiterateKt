@@ -1,5 +1,5 @@
 import { nextSiblings, treeInsert, schedule, has } from './lib/dom'
-import { element, configured, withDefaults, withClasses, withAttributes, withText } from './lib/dom'
+import { element, configured, withDefaults, withClasses, withAttributes, withText, withInnerHTML } from './lib/dom'
 
 import { iterator, preetyShowList, showIfSomeLength, deepDependencies } from './lib/util'
 import { Predicate, negate, or } from './lib/util'
@@ -21,8 +21,8 @@ export const literateKtConfig = {
     "match-brackets": true
   },
   texts: {
-    _for: (id:string) => ` for ${id}`,
-    dependsOn: (deps: Array<string>) => ` depends on ${preetyShowList(deps)}`,
+    _for: (id:string) => ` for ${id.bold()}`,
+    dependsOn: (deps: Array<string>) => ` depends on ${preetyShowList(deps.map(t => t.bold().italics()))}`,
     expectingFor: (what:any, that:any) => `Expecting ${what} for ${that}`,
     adjNounDesc: (adj:string, noun:string, desc:string) => `${adj} ${noun}${desc}`
   }
@@ -79,7 +79,7 @@ export function enableCodeFilter(begin_e: Element) {
 
   let showCodeBtn: Element,
   codeDiv = element("div", withClasses(playground),
-    showCodeBtn = element("button", withText(adjNounDesc("Kotlin", "code", describe)))
+    showCodeBtn = element("button", withInnerHTML(adjNounDesc("Kotlin", "code", describe)))
   );
   treeInsert.before(endDiv, codeDiv); //ok:show-div-button
 
