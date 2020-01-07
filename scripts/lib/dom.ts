@@ -31,6 +31,10 @@ export function schedule(name: string, ...args: any) {
   else scheduleQueue.push(args);
 }
 
+export const treeInsert = {
+  before: (target: Element, e: Element) => target.parentElement.insertBefore(e, target)
+};
+
 export const has = {
   cssClass: function(cssClass: string): Predicate<Element> {
     return e => e.classList?.contains(cssClass) ?? false;
@@ -64,7 +68,3 @@ const withAttributes: (attribute:Object) => ElementConfig
   = (attribute) => (e => assignElementAttribute(e, attribute));
 const withText: (text:string) => ElementConfig
   = text => (e => { e.textContent = text; });
-
-export const treeInsert = {
-  before: (target: Element, e: Element) => target.parentElement.insertBefore(e, target)
-};

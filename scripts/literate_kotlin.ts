@@ -1,11 +1,10 @@
 import { nextSiblings, treeInsert, schedule, has } from './lib/dom'
 import { element, configured, withDefaults, withClasses, withAttributes, withText } from './lib/dom'
 
-import { iterator, preetyShowList, showIfSome, showIfSomeLength, flatten, deepDependencies } from './lib/util'
+import { iterator, preetyShowList, showIfSomeLength, deepDependencies } from './lib/util'
 import { Predicate, negate, or } from './lib/util'
-import is from './lib/is_test'
-
 import { Peek, peekWhile } from './lib/read'
+import is from './lib/is_test'
 
 export function enable() {
   document.querySelectorAll('.literateBegin').forEach(enableCodeFilter);
@@ -112,9 +111,9 @@ function dependenciesAndDescribe(e: Element): [Array<string>, string] {
 
   return [dependencyCodes, describe];
 }
-
 function solveDependencies(e_root: Element): Array<Element> {
   const { dependAttribute: depend, dependSeprator} = literateKtMagics;
+
   const linkIds = (e:Element) => e.getAttribute(depend)?.split(dependSeprator) ?? [];
   const links = (e:Element) => linkIds(e).map(id => document.getElementById(id));
   return deepDependencies(e_root, links);
