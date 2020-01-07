@@ -1,7 +1,7 @@
 import { nextSiblings, treeInsert, schedule, has } from './lib/dom'
 import { element, configured, withDefaults, withClasses, withAttributes, withText } from './lib/dom'
 
-import { iterator, preetyShowList, showIfSome, showIfSomeLength, flatten } from './lib/util'
+import { iterator, preetyShowList, showIfSome, showIfSomeLength, flatten, deepDependencies } from './lib/util'
 import { Predicate, negate, or } from './lib/util'
 import is from './lib/is_test'
 
@@ -106,18 +106,16 @@ export function enableCodeFilter(begin_e: Element) {
 function dependenciesAndDescribe(e: Element): [Array<string>, string] {
   const { _for, dependsOn } = literateKtConfig.texts;
 
-  let dependencyDivs = deepDependencies(e);
+  let dependencyDivs = solveDependencies(e);
   let describe = showIfSomeLength(_for, e.id) + showIfSomeLength(dependsOn, dependencyDivs.map(eDep => eDep.id));
   let dependencyCodes = dependencyDivs.map(eDep => filterCode(eDep)[0]); //ok:resolve-dependencies
 
   return [dependencyCodes, describe];
 }
 
-function deepDependencies(e: Element): Array<Element> {
+function solveDependencies(e_root: Element): Array<Element> {
   const { dependAttribute: depend, dependSeprator} = literateKtMagics;
-
-  let dependencies: Array<string> = e.getAttribute(depend)?.split(dependSeprator) ?? [];
-  if (dependencies.length == 0) return []; //base:no-dependency
-  else return flatten(dependencies.map(id => document.getElementById(id))
-    .map(eDep => deepDependencies(eDep).concat(eDep)));
+  const linkIds = (e:Element) => e.getAttribute(depend)?.split(dependSeprator) ?? [];
+  const links = (e:Element) => linkIds(e).map(id => document.getElementById(id));
+  return deepDependencies(e_root, links);
 }

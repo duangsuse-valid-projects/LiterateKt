@@ -1,4 +1,4 @@
-import { Predicate } from './util';
+import { Predicate } from './util'
 
 export class Peek<T> implements Iterator<T> {
   iter: Iterator<T>

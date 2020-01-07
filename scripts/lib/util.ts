@@ -1,10 +1,18 @@
-import is from './is_test';
+import is from './is_test'
 
 export type Action = () => any
 export type Consumer<T> = (it:T) => any
 export type Rewrite<T> = (old:T) => T
 export type Show<T> = (item:T) => string
 export type Predicate<T> = (it:T) => Boolean
+export type Links<T> = (item:T) => Iterable<T>
+
+export function negate<T>(p: Predicate<T>): Predicate<T>
+  { return x => !p(x); }
+export function or<T>(p: Predicate<T>, q: Predicate<T>): Predicate<T>
+  { return x => p(x) || q(x); }
+export function and<T>(p: Predicate<T>, q: Predicate<T>): Predicate<T>
+  { return x => p(x) && q(x); }
 
 export function iterableBy<T>(succ: Rewrite<T>): (init:T) => Iterable<T> {
   return function *(init) {
@@ -15,13 +23,6 @@ export function iterableBy<T>(succ: Rewrite<T>): (init:T) => Iterable<T> {
 export function iterator<T>(xs: Iterable<T>): Iterator<T> {
   return xs[Symbol.iterator]();
 }
-
-export function negate<T>(p: Predicate<T>): Predicate<T>
-  { return x => !p(x); }
-export function or<T>(p: Predicate<T>, q: Predicate<T>): Predicate<T>
-  { return x => p(x) || q(x); }
-export function and<T>(p: Predicate<T>, q: Predicate<T>): Predicate<T>
-  { return x => p(x) && q(x); }
 
 export function preetyShowList(xs: Array<String>, sep = ", ", last_sep = " and ") {
   const last = xs.length-1;
@@ -45,4 +46,9 @@ export function flatten<T>(xss: Array<Array<T>>): Array<T> {
   let flat = [];
   for (let xs of xss) flat.push(...xs);
   return flat;
+}
+export function deepDependencies<T>(node: T, links: Links<T>): Array<T> {
+  let dependencies: Array<T> = [...links(node)];
+  if (is.empty(dependencies)) return []; //base:no-dependency
+  else return flatten(dependencies.map(eDep => deepDependencies(eDep, links).concat(eDep)));
 }
