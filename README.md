@@ -9,20 +9,20 @@ Write/run Kotlin code in blog posts, translate them into structured projects.
 ```markdown
 <div class="literateBegin" id="VirtualFileSystemImpl" depend="FileInterface"></div>
 
-<div class="literateBegin" id="FileInterface"></div>
+<div class="literateBegin" id="FileInterface"></div> <!-- inner literate -->
 
 # Abstraction for interacting with lower-level FS primitives
 
 > NOTE: literate can be encapsulated by top-level literates (max-depth=1)
 
-> Every `literateBegin .. literateEnd` section will create a "Kotlin code" area
+> Every `literateBegin .. literateEnd` section will create an "Kotlin code" area
 
-> Inner literate is not filtered in "Kotlin code", explicitly specify dependencies can do the same
-<div class="literateEnd"></div>
+> Code of inner literate is ignored, specify dependencies explicitly to create reference between every literate blocks
+<div class="literateEnd"></div> <!-- inner literate end -->
 
 # Implementing a VFS
 
-<div class="literateEnd"></div> <!-- VFS -->
+<div class="literateEnd"></div> <!-- VFS literate end -->
 
 <div class="literateBegin" depend="VirtualFileSystemImpl"></div>
 
