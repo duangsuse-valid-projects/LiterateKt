@@ -2,11 +2,10 @@ import { Predicate, Consumer, Action } from './util'
 import { iterableBy } from './util'
 
 export type ElementConfig = Consumer<Element>
-const entries = Object['entries'];
 
 export const nextSiblings = iterableBy<Element>(e => e.nextElementSibling);
 export function assignElementAttribute(node: Element, attributes: Object) {
-  for (let [name, value] of entries(attributes))
+  for (let [name, value] of Object.entries(attributes))
     node.setAttribute(name, value);
 }
 /** Use document.body to refer whole DOM content */

@@ -3,11 +3,11 @@
     "module": "amd",
     "target": "es5",
     "noImplicitAny": true,
-    "noEmitOnError": true,
+    "noEmitOnError": false,
     "downlevelIteration": true,
     "outDir": "dist",
     "pretty": true,
-    "lib": [ "es2015", "dom" ]
+    "lib": [ "es2015", "es2017.Object", "dom" ]
   },
   "include": [ "*.ts", "lib/*.ts" ]
 }
