@@ -1,5 +1,6 @@
 import { Predicate, Consumer, Action } from './util'
 import { iterableBy, entries } from './util'
+import is from './is_test'
 
 export type ElementConfig = Consumer<Element>
 
@@ -19,13 +20,14 @@ export function waitsElement(e: Element, op: Action) {
   }
 }
 
-const scheduleQueue: Array<Array<any>> = [];
+const scheduleQueues: {[name:string]: Array<Array<any>>} = {};
 const schedulePlace: any = (window as any);
 export function schedule(name: string, ...args: any) {
+  let scheduleQueue = scheduleQueues[name];
   let found: Function = schedulePlace[name];
-  if (found != undefined) {
-    while (scheduleQueue.length != 0) found(...scheduleQueue.shift());
-    found(...args);
+  if (is.someValue(found)) {
+    while (is.notEmpty(scheduleQueue)) found(...scheduleQueue.shift());
+    /*and then call*/found(...args);
   }
   else scheduleQueue.push(args);
 }
