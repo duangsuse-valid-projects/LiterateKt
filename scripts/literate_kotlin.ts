@@ -1,7 +1,7 @@
 import { nextSiblings, treeInsert, schedule, has } from './lib/dom'
 import { element, configured, withDefaults, withClasses, withAttributes, withText } from './lib/dom'
 
-import { iterator, preetyShowList, showIfSome, showIfSomeText, flatten } from './lib/util'
+import { iterator, preetyShowList, showIfSome, showIfSomeLength, flatten } from './lib/util'
 import { Predicate, negate, or } from './lib/util'
 import is from './lib/is_test'
 
@@ -23,7 +23,9 @@ export const literateKtConfig = {
   },
   texts: {
     _for: (id:string) => ` for ${id}`,
-    dependsOn: (deps: Array<string>) => ` depends on ${preetyShowList(deps)}`
+    dependsOn: (deps: Array<string>) => ` depends on ${preetyShowList(deps)}`,
+    expectingFor: (what:any, that:any) => `Expecting ${what} for ${that}`,
+    adjNounDesc: (adj:string, noun:string, desc:string) => `${adj} ${noun}${desc}`
   }
 };
 
@@ -62,12 +64,14 @@ export function filterCode(begin_e: Element): [string, Element] {
   return [codes, endDiv];
 }
 function read<T>(p: Predicate<T>, s: Peek<T>) {
+  const { expectingFor } = literateKtConfig.texts;
   if (p(s.peek)) s.next();
-  else throw Error(`Expecting ${p} for ${s}`);
+  else throw Error(expectingFor(p, s));
 }
 
 export function enableCodeFilter(begin_e: Element) {
   const { playgroundDefaults } = literateKtConfig;
+  const { adjNounDesc } = literateKtConfig.texts;
   const { playgroundClass: playground, hiddenDependencyClass: hiddenDependency,
     KotlinPlaygroundGlobalId: KotlinPlayground } = literateKtMagics;
 
@@ -76,7 +80,7 @@ export function enableCodeFilter(begin_e: Element) {
 
   let showCodeBtn: Element,
   codeDiv = element("div", withClasses(playground),
-    showCodeBtn = element("button", withText(`Kotlin Code${describe}`))
+    showCodeBtn = element("button", withText(adjNounDesc("Kotlin", "code", describe)))
   );
   treeInsert.before(endDiv, codeDiv); //ok:show-div-button
 
@@ -87,7 +91,7 @@ export function enableCodeFilter(begin_e: Element) {
         configured(withText(codeText), withAttributes(playgroundDefaults))
       )
     );
-    if (is.notNull(dependencies)) {
+    if (is.notEmpty(dependencies)) {
       let dependTa = element("textarea",
         configured(withText(dependencies.join("")), withClasses(hiddenDependency))
       );
@@ -103,17 +107,17 @@ function dependenciesAndDescribe(e: Element): [Array<string>, string] {
   const { _for, dependsOn } = literateKtConfig.texts;
 
   let dependencyDivs = deepDependencies(e);
-  let describe = showIfSomeText(_for, e.id) + showIfSome(dependsOn, dependencyDivs?.map(eDep => eDep.id));
-  let dependencyCodes = dependencyDivs?.map(eDep => filterCode(eDep)[0]) ?? null; //ok:resolve-dependencies
+  let describe = showIfSomeLength(_for, e.id) + showIfSomeLength(dependsOn, dependencyDivs.map(eDep => eDep.id));
+  let dependencyCodes = dependencyDivs.map(eDep => filterCode(eDep)[0]); //ok:resolve-dependencies
 
   return [dependencyCodes, describe];
 }
-/** Literate without dependency results null */
+
 function deepDependencies(e: Element): Array<Element> {
   const { dependAttribute: depend, dependSeprator} = literateKtMagics;
 
   let dependencies: Array<string> = e.getAttribute(depend)?.split(dependSeprator) ?? [];
-  if (dependencies.length == 0) return null; //base:no-dependency
+  if (dependencies.length == 0) return []; //base:no-dependency
   else return flatten(dependencies.map(id => document.getElementById(id))
-    .map(eDep => deepDependencies(eDep)?.concat(eDep) ?? [eDep]));
+    .map(eDep => deepDependencies(eDep).concat(eDep)));
 }

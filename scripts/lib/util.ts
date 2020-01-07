@@ -3,6 +3,7 @@ import is from './is_test';
 export type Action = () => any
 export type Consumer<T> = (it:T) => any
 export type Rewrite<T> = (old:T) => T
+export type Show<T> = (item:T) => string
 export type Predicate<T> = (it:T) => Boolean
 
 export function iterableBy<T>(succ: Rewrite<T>): (init:T) => Iterable<T> {
@@ -27,11 +28,17 @@ export function preetyShowList(xs: Array<String>, sep = ", ", last_sep = " and "
   if (xs.length == 0 || xs.length == 1) return xs.join(sep);
   else return xs.slice(0, last).join(sep) + last_sep + xs[last];
 }
-export function showIfSome<T>(show: (item:T) => string, item: T): string {
+export function showIfSome<T>(show: Show<T>, item: T): string {
   return is.someValue(item)? show(item) : "";
 }
-export function showIfSomeText<T>(show: (item:T) => string, item: T): string {
-  return is.someText(item)? show(item) : "";
+
+export function showIfSomeLength(show: Show<string>, item: string): string;
+export function showIfSomeLength(show: Show<Array<any>>, item: Array<any>): string;
+export function showIfSomeLength(show: Show<any>, item: any): string {
+  if (typeof item === "string")
+    return is.someText(item)? show(item) : "";
+  else
+    return is.notEmpty(item)? show(item) : "";
 }
 
 export function flatten<T>(xss: Array<Array<T>>): Array<T> {
