@@ -25,7 +25,7 @@ deploy() {
   mkdir build; pushd build
   gitConfig ${GitHubUser} ${GitHubEmail}
   runBuild
-  mv * ..
+  mv dist/ ..
   popd; rm -rf build
   gitInitPull ${Repo} ${Branch} ${GitHubKey}
   gitPushPwdToBranch ${Branch} "Automatic Build by Travis CI"
