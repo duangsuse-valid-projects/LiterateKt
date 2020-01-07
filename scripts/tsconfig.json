@@ -7,7 +7,7 @@
     "downlevelIteration": true,
     "outDir": "dist",
     "pretty": true,
-    "lib": [ "dom" ]
+    "lib": [ "es2015", "dom" ]
   },
   "include": [ "*.ts", "lib/*.ts" ]
 }
