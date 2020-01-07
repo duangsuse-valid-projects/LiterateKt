@@ -34,5 +34,6 @@ runBuild() {
   pushd ..
   tsc; webpack
   mv dist/* build/
+  mv *.md build/
   popd
 }

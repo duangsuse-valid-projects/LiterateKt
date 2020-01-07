@@ -1,4 +1,7 @@
-import { waitsElement } from './lib/dom'
-import { enable } from './literate_kotlin'
+import { waitsElement, schedule } from './lib/dom'
+import { enable, literateKtConfig } from './literate_kotlin'
 
-waitsElement(document.body, enable);
+waitsElement(document.body, () => {
+  schedule("configureLiterateKt", literateKtConfig);
+  enable();
+});

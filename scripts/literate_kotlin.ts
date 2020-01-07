@@ -13,6 +13,7 @@ export const literateKtConfig = {
   literateBegin: has.cssClass("literateBegin"),
   literateEnd: has.cssClass("literateEnd"),
   literateCodeFilter: has.cssClass("language-kotlin"),
+  dependencyOrdered: false,
   playgroundDefaults: {
     "indent": 2,
     "auto-indent": true,
@@ -25,8 +26,7 @@ export const literateKtConfig = {
     dependsOn: (deps: Array<string>) => ` depends on ${preetyShowList(deps.map(t => t.bold().italics()))}`,
     expectingFor: (what:any, that:any) => `Expecting ${what} for ${that}`,
     nounNounDesc: (noun0:string, noun1:string, desc:string) => `${noun0} ${noun1}${desc}`
-  },
-  dependencyOrdered: false
+  }
 };
 
 ////
