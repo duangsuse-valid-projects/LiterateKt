@@ -7,7 +7,7 @@ import { Peek, peekWhile } from './lib/read'
 import is from './lib/is_test'
 
 export function enable() {
-  document.querySelectorAll('.literateBegin').forEach(enableCodeFilter);
+  document.querySelectorAll(".literateBegin").forEach(enableCodeFilter);
 }
 export const literateKtConfig = {
   literateBegin: has.cssClass("literateBegin"),
