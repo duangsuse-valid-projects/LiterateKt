@@ -23,6 +23,7 @@ export function waitsElement(e: Element, op: Action) {
 const scheduleQueues: {[name:string]: Array<Array<any>>} = {};
 const schedulePlace: any = (window as any);
 export function schedule(name: string, ...args: any) {
+  if (!is.someValue(scheduleQueues[name])) scheduleQueues[name] = []; //do:init-for-name
   let scheduleQueue = scheduleQueues[name];
   let found: Function = schedulePlace[name];
   if (is.someValue(found)) {
