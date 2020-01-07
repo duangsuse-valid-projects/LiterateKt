@@ -52,3 +52,18 @@ export function deepDependencies<T>(node: T, links: Links<T>): Array<T> {
   if (is.empty(dependencies)) return []; //base:no-dependency
   else return flatten(dependencies.map(eDep => deepDependencies(eDep, links).concat(eDep)));
 }
+export function flatDependencies<T>(root: T, links: Links<T>): Array<T> {
+  let bfsQueue: Array<T> = [...links(root)];
+  let dependencySet: Set<T> = new Set();
+  while (is.notEmpty(bfsQueue)) {
+    let someNode = bfsQueue.shift();
+    if (dependencySet.has(someNode)) {
+      continue; // skip cyclic deps like a-b
+    } else {
+      dependencySet.add(someNode);
+      let itsDepencencies = links(someNode);
+      bfsQueue.push(...itsDepencencies);
+    }
+  }
+  return [...dependencySet.values()];
+}

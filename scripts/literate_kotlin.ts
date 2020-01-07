@@ -1,7 +1,7 @@
 import { nextSiblings, treeInsert, schedule, has } from './lib/dom'
 import { element, configured, withDefaults, withClasses, withAttributes, withText, withInnerHTML } from './lib/dom'
 
-import { iterator, preetyShowList, showIfSomeLength, deepDependencies } from './lib/util'
+import { iterator, preetyShowList, showIfSomeLength, deepDependencies, flatDependencies, Links } from './lib/util'
 import { Predicate, negate, or } from './lib/util'
 import { Peek, peekWhile } from './lib/read'
 import is from './lib/is_test'
@@ -25,7 +25,8 @@ export const literateKtConfig = {
     dependsOn: (deps: Array<string>) => ` depends on ${preetyShowList(deps.map(t => t.bold().italics()))}`,
     expectingFor: (what:any, that:any) => `Expecting ${what} for ${that}`,
     adjNounDesc: (adj:string, noun:string, desc:string) => `${adj} ${noun}${desc}`
-  }
+  },
+  dependencyOrdered: false
 };
 
 ////
@@ -116,5 +117,10 @@ function solveDependencies(e_root: Element): Array<Element> {
 
   const linkIds = (e:Element) => e.getAttribute(depend)?.split(dependSeprator) ?? [];
   const links = (e:Element) => linkIds(e).map(id => document.getElementById(id));
-  return deepDependencies(e_root, links);
+  return dependencySolver<Element>()(e_root, links);
+}
+function dependencySolver<T>(): (root:T, link:Links<T>) => Array<T> {
+  const { dependencyOrdered } = literateKtConfig;
+
+  return dependencyOrdered? deepDependencies : flatDependencies;
 }
