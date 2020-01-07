@@ -25,15 +25,14 @@ deploy() {
   mkdir build; pushd build
   gitConfig ${GitHubUser} ${GitHubEmail}
   runBuild
-  mv dist/ ..
-  popd; rm -rf build
   gitInitPull ${Repo} ${Branch} ${GitHubKey}
-  gitPushPwdToBranch ${Branch} "Automatic Build by Travis CI"
+  gitPushPwdToBranch ${Branch} "Automatic build by Travis CI"
+  popd; rm -rf build
 }
 
 runBuild() {
   pushd ..
   tsc; webpack
-  mv dist/ build/
+  mv dist/* build/
   popd
 }
