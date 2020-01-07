@@ -1,21 +1,21 @@
 import { Predicate, Consumer, Action } from './util'
-import { iterableBy } from './util'
+import { iterableBy, entries } from './util'
 
 export type ElementConfig = Consumer<Element>
 
 export const nextSiblings = iterableBy<Element>(e => e.nextElementSibling);
-export function assignElementAttribute(node: Element, attributes: Object) {
-  for (let [name, value] of Object.entries(attributes))
-    node.setAttribute(name, value);
+export function assignElementAttribute(node: Element, attributes: any) {
+  for (let [name, value] of entries(attributes))
+    node.setAttribute(name, value.toString());
 }
 /** Use document.body to refer whole DOM content */
 export function waitsElement(e: Element, op: Action) {
-  const isLoaded = (rs:string) => rs == 'complete';
+  const isLoaded = (rs:string) => rs == "complete";
   if (e === document.body) {
     if (isLoaded(document.readyState)) return op();
-    else document.addEventListener('DOMContentLoaded', op);
+    else document.addEventListener("DOMContentLoaded", op);
   } else {
-    e.addEventListener('load', op);
+    e.addEventListener("load", op);
   }
 }
 

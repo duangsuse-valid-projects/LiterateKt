@@ -23,6 +23,12 @@ export function iterableBy<T>(succ: Rewrite<T>): (init:T) => Iterable<T> {
 export function iterator<T>(xs: Iterable<T>): Iterator<T> {
   return xs[Symbol.iterator]();
 }
+export function entries<T>(obj: {[s:string]:T}): Array<[string, T]> {
+  if (is.someValue(Object.entries))
+    return Object.entries(obj);
+  else
+    return Object.keys(obj).map(key => [key, obj[key]] );
+}
 
 export function preetyShowList(xs: Array<String>, sep = ", ", last_sep = " and ") {
   const last = xs.length-1;

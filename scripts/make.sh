@@ -1,20 +1,20 @@
 # Require: GitHub[User/Email/Key]
 # Repo/Branch
-#NOTE: Key is GitHub API Personal Access Key
+#NOTE: Key means GitHub API Personal Access Key
 
-gitConfig() {
+gitConfig() { # (user, email)
   git config --global push.default matching
   git config --global user.name "$1"
   git config --global user.email "$2"
 }
 
-gitInitPull() {
+gitInitPull() { # (repo, branch, key)
   git init
   git remote add origin https://$3@github.com/$1
   git pull origin $2
 }
 
-gitPushPwdToBranch() {
+gitPushPwdToBranch() { # (branch, message)
   git add --all .
   git commit -m "$2"
   git push --quiet --force origin HEAD:$1
@@ -24,16 +24,14 @@ gitPushPwdToBranch() {
 deploy() {
   mkdir build; pushd build
   gitConfig ${GitHubUser} ${GitHubEmail}
-  runBuild
+  pushd ..; runBuildTo build; popd
   gitInitPull ${Repo} ${Branch} ${GitHubKey}
   gitPushPwdToBranch ${Branch} "Automatic build by Travis CI"
   popd; rm -rf build
 }
 
-runBuild() {
-  pushd ..
+runBuildTo() { # (destination)
   tsc; webpack
-  mv dist/* build/
-  mv *.md build/
-  popd
+  mv dist/* $1
+  mv *.md $1
 }
