@@ -1,5 +1,6 @@
 # Require: GitHub[User/Email/Key]
 # Repo/Branch
+#NOTE: Key is GitHub API Personal Access Key
 
 gitConfig() {
   git config --global push.default matching
@@ -15,7 +16,7 @@ gitInitPull() {
 
 gitPushPwdToBranch() {
   git add --all .
-  git commit -m $2
+  git commit -m "$2"
   git push --quiet --force origin HEAD:$1
 }
 
@@ -23,7 +24,8 @@ gitPushPwdToBranch() {
 deploy() {
   mkdir build; pushd build
   gitConfig ${GitHubUser} ${GitHubEmail}
-  runBuild; mv * ..
+  runBuild
+  mv * ..
   popd; rm -rf build
   gitInitPull ${Repo} ${Branch} ${GitHubKey}
   gitPushPwdToBranch ${Branch} "Automatic Build by Travis CI"

@@ -1,7 +1,7 @@
 language: node_js
-node_js: 8
+node_js: 10
 before_script:
   - npm install -g typescript
-  - npm install -g webpack-cli
+  - npm install -g webpack webpack-cli
 script:
   - cd scripts; source make.sh; deploy
