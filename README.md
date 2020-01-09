@@ -75,6 +75,8 @@ export const literateKtConfig = {
 };
 ```
 
+> __NOTE__: `dependencyOrdered` should be `false` when dependencies could be circular
+
 ## Project Structure
 
 + CI: Travis

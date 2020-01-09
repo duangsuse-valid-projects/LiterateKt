@@ -121,6 +121,8 @@ function solveDependencies(e_root: Element): Array<Element> {
 }
 function dependencySolver<T>(): (root:T, link:Links<T>) => Array<T> {
   const { dependencyOrdered } = literateKtConfig;
+  const uniq = (xs:Array<T>) => [...new Set(xs)];
+  const deepDependenciesUniq = (root:T, link:Links<T>) => uniq(deepDependencies(root, link));
 
-  return dependencyOrdered? deepDependencies : flatDependencies;
+  return dependencyOrdered? deepDependenciesUniq : flatDependencies;
 }
