@@ -62,31 +62,33 @@ function readCodeTags(es: Peek<Element>): [Element, Array<Element>] {
   const
     readContent = () => peekWhile(isLiteratePart, es);
 
-  // CodeTags = literateBegin (Content (ignore:Content)?)*? literateEnd
-  read(literateBegin, es);
+  // Content = anyelement!(literateBegin|literateEnd)
+  // CodeTags = literateBegin (Content (ignore:literateBegin Content literateEnd)?)*? literateEnd
+  read(literateBegin, es, "literate begin");
   do {
     nestedTags.push(...readContent());
     if (literateBegin(es.peek)) {
+      read(literateBegin, es, "inner literate begin");
       [...readContent()];
-      read(literateEnd, es);
+      read(literateEnd, es, "inner literate end");
     }
   } while (!literateEnd(es.peek));
   let endDiv = es.peek;
-  read(literateEnd, es);
+  read(literateEnd, es, "literate end");
 
   return [endDiv, nestedTags];
 }
-function read<T>(p: Predicate<T>, s: Peek<T>) {
+function read<T>(p: Predicate<T>, s: Peek<T>, msg: string) {
   const { expectingFor } = literateKtConfig.texts;
   if (p(s.peek)) s.next();
-  else throw Error(expectingFor(p, s));
+  else throw Error(expectingFor(`${p.name}: ${msg}`, s));
 }
 
 export function enableCodeFilter(begin_e: Element) {
   const { playgroundDefaults } = literateKtConfig;
-  const { nounNounDesc: adjNounDesc } = literateKtConfig.texts;
   const { playgroundClass: playground, hiddenDependencyClass: hiddenDependency,
     KotlinPlaygroundGlobalId: KotlinPlayground } = literateKtMagics;
+  const { nounNounDesc: adjNounDesc } = literateKtConfig.texts;
 
   let [codeText, endDiv] = filterCode(begin_e); //ok:filter-code
   let [dependencies, describe] = dependenciesAndDescribe(begin_e); //ok:filter-dependency-literate

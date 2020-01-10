@@ -19,7 +19,7 @@ export class Peek<T> implements Iterator<T> {
     return oldLast.value; //once more when iter has finished
   }
   toString() {
-    return `Peek(${this.peek}..${this.iter})`;
+    return `Peek(${this.peek}...${this.iter})`;
   }
 }
 export function *peekWhile<T>(p: Predicate<T>, xs: Peek<T>) {
