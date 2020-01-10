@@ -18,15 +18,17 @@ Write/run Kotlin code in blog posts, translate them into structured projects.
 > Every `literateBegin .. literateEnd` section will create an "Kotlin code" area
 
 > Code of inner literate is ignored, specify dependencies explicitly to create reference between every literate blocks
+
 <div class="literateEnd"></div> <!-- inner literate end -->
 
 # Implementing a VFS
 
 <div class="literateEnd"></div> <!-- VFS literate end -->
 
+
 <div class="literateBegin" depend="VirtualFileSystemImpl"></div>
 
-# My Application using VFS module
+# My Application using the VFS module
 
 <div class="literateEnd"></div>
 ```
