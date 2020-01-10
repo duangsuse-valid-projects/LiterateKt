@@ -1,19 +1,25 @@
-import { nextSiblings, treeInsert, schedule, has } from './lib/dom'
+import { nextSiblings, treeInsert, schedule } from './lib/dom'
+import { has } from './lib/dom'
 import { element, configured, withDefaults, withClasses, withAttributes, withText, withInnerHTML } from './lib/dom'
 
-import { iterator, preetyShowList, showIfSomeLength, deepDependencies, flatDependencies, Links } from './lib/util'
 import { Predicate, negate, or } from './lib/util'
+import { iterator, /*Graph*/Links } from './lib/util'
 import { Peek, peekWhile } from './lib/read'
+
+import { preetyShowList, showIfSomeLength } from './lib/util'
+import { deepDependencies, flatDependencies } from './lib/util'
+
 import is from './lib/is_test'
 
 export function enable() {
-  document.querySelectorAll(".literateBegin").forEach(enableCodeFilter);
+  document.querySelectorAll("."+"literateBegin").forEach(enableCodeFilter);
 }
 export const literateKtConfig = {
   literateBegin: has.cssClass("literateBegin"),
   literateEnd: has.cssClass("literateEnd"),
   literateCodeFilter: has.cssClass("language-kotlin"),
   dependencyOrdered: false,
+  dependencyTextJoin: "",
   playgroundDefaults: {
     "indent": 2,
     "auto-indent": true,
@@ -40,28 +46,35 @@ const literateKtMagics = {
 
 /** Returns [codes, endDiv], note that nested literate CANNOT be recursive */
 export function filterCode(begin_e: Element): [string, Element] {
-  const { literateBegin, literateEnd, literateCodeFilter } = literateKtConfig;
+  const { literateCodeFilter, dependencyTextJoin } = literateKtConfig;
+
+  let neighbors = new Peek(iterator(nextSiblings(begin_e)));
+  let [endDiv, nestedTags] = readCodeTags(neighbors);
+
+  let codes = nestedTags.filter(literateCodeFilter).map(e => e.textContent).join(dependencyTextJoin);
+  return [codes, endDiv];
+}
+function readCodeTags(es: Peek<Element>): [Element, Array<Element>] {
+  const { literateBegin, literateEnd } = literateKtConfig;
+  const isLiteratePart = negate(or(literateEnd, literateBegin));
 
   let nestedTags: Array<Element> = [];
-  let neighbors = new Peek(iterator(nextSiblings(begin_e)));
+  const
+    readContent = () => peekWhile(isLiteratePart, es);
 
-  const literatePart = negate(or(literateEnd, literateBegin));
-  const scanContent = () => nestedTags.push(...peekWhile(literatePart, neighbors))
-  , scanIgnoreInnerLiterate = () => [...peekWhile(negate(literateEnd), neighbors)];
-
-  read(literateBegin, neighbors);
-  do { // CodePart = literateBegin (Content (IgnoreInnerLiterate)?)*? literateEnd
-    scanContent();
-    if (literateBegin(neighbors.peek)) {
-      scanIgnoreInnerLiterate();
-      read(literateEnd, neighbors);
+  // CodeTags = literateBegin (Content (ignore:Content)?)*? literateEnd
+  read(literateBegin, es);
+  do {
+    nestedTags.push(...readContent());
+    if (literateBegin(es.peek)) {
+      [...readContent()];
+      read(literateEnd, es);
     }
-  } while (!literateEnd(neighbors.peek));
-  let endDiv = neighbors.peek;
-  read(literateEnd, neighbors);
+  } while (!literateEnd(es.peek));
+  let endDiv = es.peek;
+  read(literateEnd, es);
 
-  let codes = nestedTags.filter(literateCodeFilter).map(e => e.textContent).join("");
-  return [codes, endDiv];
+  return [endDiv, nestedTags];
 }
 function read<T>(p: Predicate<T>, s: Peek<T>) {
   const { expectingFor } = literateKtConfig.texts;
