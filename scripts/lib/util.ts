@@ -2,6 +2,7 @@ import is from './is_test'
 
 export type Action = () => any
 export type Consumer<T> = (it:T) => any
+export type Producer<T> = () => T
 export type Rewrite<T> = (old:T) => T
 export type Show<T> = (item:T) => string
 export type Predicate<T> = (it:T) => Boolean
@@ -43,9 +44,16 @@ declare global {
   interface String {
     capitalize(): string
   }
+  interface Object {
+    getOrPut(key: string, init: Producer<any>): any
+  }
 }
 String.prototype.capitalize = function(this: string): string {
   return showIfSomeLength(s => s[0].toUpperCase()+s.slice(1, s.length), this);
+}
+Object.prototype.getOrPut = function(this: any, key: string, init: Producer<any>): any {
+  if (!is.someValue(this[key])) this[key] = init();
+  return this[key];
 }
 
 export function showIfSomeLength(show: Show<string>, item: string): string;
@@ -60,8 +68,7 @@ export function showIfSomeLength(show: Show<any>, item: any): string {
 export function makeScheduler(schedulePlace: any): (name:string, ...args:any) => void {
   const scheduleQueues: {[name:string]: Array<Array<any>>} = {};
   return (name:string, ...args:any) => { //begin
-    if (!is.someValue(scheduleQueues[name])) scheduleQueues[name] = []; //do:init-for-name
-    let scheduleQueue = scheduleQueues[name];
+    let scheduleQueue = scheduleQueues.getOrPut(name, ()=> []);
     let found: Function = schedulePlace[name];
     if (is.someValue(found)) {
       while (is.notEmpty(scheduleQueue)) found(...scheduleQueue.shift());
