@@ -261,7 +261,7 @@ __我太难了！__
 ```html
 <script src="https://unpkg.com/kotlin-playground@1"></script>
 
-<script async src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.js" integrity="sha256-lIXwkX+X/PT2Ol6jZSAP/VfxI/RROCovmhrS4v1RrJs=" crossorigin="anonymous" data-main="https://duangsuse-valid-projects.github.io/LiterateKt/lkt.bundle.js"></script>
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.js" data-main="https://duangsuse-valid-projects.github.io/LiterateKt/lkt.bundle.js"></script>
 ```
 
 <script src="https://unpkg.com/kotlin-playground@1"></script>
@@ -271,4 +271,4 @@ function configureLiterateKt(cfg) {
 }
 </script>
 
-<script async src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.js" integrity="sha256-lIXwkX+X/PT2Ol6jZSAP/VfxI/RROCovmhrS4v1RrJs=" crossorigin="anonymous" data-main="dist/lkt.bundle.js"></script>
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.js" integrity="sha256-lIXwkX+X/PT2Ol6jZSAP/VfxI/RROCovmhrS4v1RrJs=" crossorigin="anonymous" data-main="lkt.bundle.js"></script>
