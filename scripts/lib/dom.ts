@@ -1,6 +1,5 @@
 import { Predicate, Consumer, Action } from './util'
-import { iterableBy, entries } from './util'
-import is from './is_test'
+import { iterableBy, entries, makeScheduler } from './util'
 
 export type ElementConfig = Consumer<Element>
 
@@ -20,18 +19,7 @@ export function waitsElement(e: Element, op: Action) {
   }
 }
 
-const scheduleQueues: {[name:string]: Array<Array<any>>} = {};
-const schedulePlace: any = (window as any);
-export function schedule(name: string, ...args: any) {
-  if (!is.someValue(scheduleQueues[name])) scheduleQueues[name] = []; //do:init-for-name
-  let scheduleQueue = scheduleQueues[name];
-  let found: Function = schedulePlace[name];
-  if (is.someValue(found)) {
-    while (is.notEmpty(scheduleQueue)) found(...scheduleQueue.shift());
-    /*and then call*/found(...args);
-  }
-  else scheduleQueue.push(args);
-}
+export const schedule = makeScheduler(window);
 
 export const treeInsert = {
   before: (target: Element, e: Element) => target.parentElement.insertBefore(e, target)

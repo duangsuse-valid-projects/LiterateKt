@@ -1,5 +1,4 @@
 import is from './is_test'
-import { StringDecoder } from 'string_decoder'
 
 export type Action = () => any
 export type Consumer<T> = (it:T) => any
@@ -56,6 +55,20 @@ export function showIfSomeLength(show: Show<any>, item: any): string {
     return is.someText(item)? show(item) : "";
   else
     return is.notEmpty(item)? show(item) : "";
+}
+
+export function makeScheduler(schedulePlace: any): (name:string, ...args:any) => void {
+  const scheduleQueues: {[name:string]: Array<Array<any>>} = {};
+  return (name:string, ...args:any) => { //begin
+    if (!is.someValue(scheduleQueues[name])) scheduleQueues[name] = []; //do:init-for-name
+    let scheduleQueue = scheduleQueues[name];
+    let found: Function = schedulePlace[name];
+    if (is.someValue(found)) {
+      while (is.notEmpty(scheduleQueue)) found(...scheduleQueue.shift());
+      /*and then call*/found(...args);
+    }
+    else scheduleQueue.push(args);
+  }; //end
 }
 
 export function flatten<T>(xss: Array<Array<T>>): Array<T> {
