@@ -17,7 +17,12 @@ export function enable() {
 export const literateKtConfig = {
   literateBegin: has.cssClass("literateBegin"),
   literateEnd: has.cssClass("literateEnd"),
-  literateCodeFilter: has.cssClass("language-kotlin"),
+  literateLanguage: 'kotlin',
+  literateCodeFilter: (lang:string) => has.cssClass(`language-${lang}`),
+  language: {
+    kotlin: [withAttributes,
+      (e:Element) => schedule(literateKtMagics.KotlinPlaygroundGlobalId, e)]
+  },
   dependencyOrdered: false,
   dependencyTextJoin: "",
   playgroundDefaults: {
@@ -38,6 +43,7 @@ export const literateKtConfig = {
 ////
 const literateKtMagics = {
   dependAttribute: "depend",
+  langAttribute: "lang",
   hiddenDependencyClass: "hidden-dependency",
   playgroundClass: "playground",
   dependSeprator: " ",
@@ -45,14 +51,16 @@ const literateKtMagics = {
 };
 
 /** Returns [codes, endDiv], note that nested literate CANNOT be recursive */
-export function filterCode(begin_e: Element): [string, Element] {
-  const { literateCodeFilter, dependencyTextJoin } = literateKtConfig;
+export function filterCode(begin_e: Element): [string, string, Element] {
+  const { literateCodeFilter, dependencyTextJoin, literateLanguage } = literateKtConfig;
+  const langDefault = literateLanguage;
 
   let neighbors = new Peek(iterator(nextSiblings(begin_e)));
   let [endDiv, nestedTags] = readCodeTags(neighbors);
+  let lang = begin_e.getAttribute(literateKtMagics.langAttribute) ?? langDefault;
 
-  let codes = nestedTags.filter(literateCodeFilter).map(e => e.textContent).join(dependencyTextJoin);
-  return [codes, endDiv];
+  let codes = nestedTags.filter(literateCodeFilter(lang)).map(e => e.textContent).join(dependencyTextJoin);
+  return [lang, codes, endDiv];
 }
 function readCodeTags(es: Peek<Element>): [Element, Array<Element>] {
   const { literateBegin, literateEnd } = literateKtConfig;
@@ -85,17 +93,17 @@ function read<T>(p: Predicate<T>, s: Peek<T>, msg: string) {
 }
 
 export function enableCodeFilter(begin_e: Element) {
-  const { playgroundDefaults } = literateKtConfig;
-  const { playgroundClass: playground, hiddenDependencyClass: hiddenDependency,
-    KotlinPlaygroundGlobalId: KotlinPlayground } = literateKtMagics;
+  const { playgroundDefaults, language, dependencyTextJoin } = literateKtConfig;
+  const { playgroundClass: playground, hiddenDependencyClass: hiddenDependency } = literateKtMagics;
   const { nounNounDesc: adjNounDesc } = literateKtConfig.texts;
 
-  let [codeText, endDiv] = filterCode(begin_e); //ok:filter-code
+  let [lang, codeText, endDiv] = filterCode(begin_e); //ok:filter-code
+  let [operateInitElement, operateShow] = (language as any)[lang];
   let [dependencies, describe] = dependenciesAndDescribe(begin_e); //ok:filter-dependency-literate
 
   let showCodeBtn: Element,
   codeDiv = element("div", withClasses(playground),
-    showCodeBtn = element("button", withInnerHTML(adjNounDesc("Kotlin", "code", describe)))
+    showCodeBtn = element("button", withInnerHTML(adjNounDesc(lang.capitalize(), "code", describe)))
   );
   treeInsert.before(endDiv, codeDiv); //ok:show-div-button
 
@@ -103,18 +111,18 @@ export function enableCodeFilter(begin_e: Element) {
     let code: Element,
     preCode = element("pre", withDefaults,
       code = element("code",
-        configured(withText(codeText), withAttributes(playgroundDefaults))
+        configured(withText(codeText), operateInitElement(playgroundDefaults))
       )
     );
     if (is.notEmpty(dependencies)) {
       let dependTa = element("textarea",
-        configured(withText(dependencies.join("")), withClasses(hiddenDependency))
+        configured(withText(dependencies.join(dependencyTextJoin)), withClasses(hiddenDependency))
       );
       code.appendChild(dependTa); //do:add-hidden-dependencies
     }
     codeDiv.appendChild(preCode); //ok:show-code
     showCodeBtn.remove();
-    schedule(KotlinPlayground, code);
+    operateShow(codeDiv);
   };
   showCodeBtn.addEventListener("click", showKotlinSource);
 }

@@ -1,4 +1,5 @@
 import is from './is_test'
+import { StringDecoder } from 'string_decoder'
 
 export type Action = () => any
 export type Consumer<T> = (it:T) => any
@@ -37,6 +38,15 @@ export function preetyShowList(xs: Array<String>, sep = ", ", last_sep = " and "
 }
 export function showIfSome<T>(show: Show<T>, item: T): string {
   return is.someValue(item)? show(item) : "";
+}
+
+declare global {
+  interface String {
+    capitalize(): string
+  }
+}
+String.prototype.capitalize = function(this: string): string {
+  return showIfSomeLength(s => s[0].toUpperCase()+s.slice(1, s.length), this);
 }
 
 export function showIfSomeLength(show: Show<string>, item: string): string;
