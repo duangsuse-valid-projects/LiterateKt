@@ -68,7 +68,7 @@ export function showIfSomeLength(show: Show<any>, item: any): string {
 export function makeScheduler(schedulePlace: any): (name:string, ...args:any) => void {
   const scheduleQueues: {[name:string]: Array<Array<any>>} = {};
   return (name:string, ...args:any) => { //begin
-    let scheduleQueue = scheduleQueues.getOrPut(name, ()=> []);
+    let scheduleQueue = scheduleQueues.getOrPut(name, Array);
     let found: Function = schedulePlace[name];
     if (is.someValue(found)) {
       while (is.notEmpty(scheduleQueue)) found(...scheduleQueue.shift());

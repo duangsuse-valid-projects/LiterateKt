@@ -131,7 +131,7 @@ function dependenciesAndDescribe(e: Element): [Array<string>, string] {
 
   let dependencyDivs = solveDependencies(e);
   let describe = showIfSomeLength(_for, e.id) + showIfSomeLength(dependsOn, dependencyDivs.map(eDep => eDep.id));
-  let dependencyCodes = dependencyDivs.map(eDep => filterCode(eDep)[0]); //ok:resolve-dependencies
+  let dependencyCodes = dependencyDivs.map(eDep => { let [_0, cs, _1] = filterCode(eDep); return cs }); //ok:resolve-dependencies
 
   return [dependencyCodes, describe];
 }
