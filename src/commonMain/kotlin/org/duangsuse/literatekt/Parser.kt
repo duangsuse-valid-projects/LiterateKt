@@ -13,6 +13,7 @@ infix fun <T, R, R1> Parser<T, R>.contextual(op: (R) -> Parser<T, R1>): Parser<T
 fun <T, R> Parser<T, R>.toDefault(defaultValue: R): PositiveParser<T, R> = read@ { s ->
   return@read this(s) ?: defaultValue
 }
+
 fun <T> satisfy(predicate: Predicate<T>): Parser<T, T> = read@ { s ->
   return@read s.peek.takeIf(predicate)?.also { s.consume() }
 }

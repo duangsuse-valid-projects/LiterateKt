@@ -2,20 +2,30 @@ package org.duangsuse.literatekt.model
 
 import org.duangsuse.literatekt.Feed
 import org.duangsuse.literatekt.cmdline.Path
+import org.duangsuse.literatekt.cmdline.Properties
 
 typealias Line = String
 typealias Code = String
+typealias LineFeed = Feed<Line>
 
 data class CompileUnit(val scope: String, val sourceSet: String, val namespace: String)
+const val README: Path = "README.md"
 
+/**
+ * Intrinsic things used to do markdown - project structure generation
+ */
 interface GenerateIntrinsic {
+  /** Resolve base dir for [src] */
   fun solvePath(src: CompileUnit): Path
+  /** Post-generate project config files like `build.gradle` */
   fun generateProject(base: Path)
-  fun readLinks(file: Feed<Line>): Iterable<Path>?
-  fun readCompileUnit(file: Feed<Line>): Pair<CompileUnit, Code>
+  /** Read markdown dependency links in [README] */
+  fun readLinks(file: LineFeed): Iterable<Path>
+  /** Read package declaration, filter code in markdown file */
+  fun readCompileUnit(file: LineFeed): Pair<CompileUnit, Code>
 }
-interface LiterateKtPlugin<CFG> {
-  val name: String
-  fun readConfig(entry: Feed<Line>): CFG
-  fun create(cfg: CFG, properties: Map<String, String>): GenerateIntrinsic
+interface Named { val name: String }
+interface LiterateKtPlugin<CFG>: Named {
+  fun readConfig(entry: LineFeed): CFG
+  fun create(config: CFG, properties: Properties): GenerateIntrinsic
 }
