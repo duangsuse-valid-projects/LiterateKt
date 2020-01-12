@@ -118,7 +118,7 @@ make sure `package` declaration is appeared after `<h1>` and before any header t
 kotlinlit args
   where args:
   (-T_target) default "gradle"
-  (-t_name(=value)?) many
+  (-t name(=value)?) many
   (-d dir) default "build"
   (-s dir) default "."
 ```

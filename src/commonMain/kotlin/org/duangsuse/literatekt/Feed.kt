@@ -35,3 +35,6 @@ class IteratorFeed<T>(private val iterator: Iterator<T>): Feed<T> {
       throw Feed.End()
   }
 }
+
+fun String.feed(): Feed<Char> = IteratorFeed(this.iterator())
+fun <E> List<E>.feed(): Feed<E> = IteratorFeed(this.listIterator())
