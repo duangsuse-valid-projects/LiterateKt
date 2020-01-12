@@ -12,18 +12,20 @@ abstract class CommandParser<out R>(private vararg val args: String): Iterator<S
 
   protected fun next(name: String): String {
     if (!hasNext()) parseError("expecting $name")
-    else return next()
+    else return next().also {
+      if (extractArg(it) != null) parseError("ambiguous `$it' could refer to another command")
+    }
   }
   protected abstract fun onHandle(arg: String)
   protected abstract fun result(): R
 
-  protected open fun extractArg(rawArg: String): String
-    = ARG_REGEX.find(rawArg)?.groupValues?.get(1) ?: parseError("Bad arg form: $rawArg")
+  protected open fun extractArg(rawArg: String): String?
+    = ARG_REGEX.find(rawArg)?.groupValues?.get(1)
   fun run(): R {
     while (hasNext()) {
-      val arg = extractArg(next())
+      val arg = next().let { extractArg(it) ?: parseError("bad arg form: `$it'") }
       try { onHandle(arg) }
-      catch (e: ParseError) { parseError("Error near $arg: ${e.message}") }
+      catch (e: ParseError) { parseError("Error parsing `$arg': ${e.message}") }
     }
     return result()
   }

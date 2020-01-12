@@ -7,7 +7,7 @@ group 'org.duangsuse'
 version '1.0'
 
 kotlin {
-  jvm(); js(); linuxX64("linux")
+  jvm();
   sourceSets {
     commonMain {
       dependencies { implementation kotlin('stdlib-common') } }
