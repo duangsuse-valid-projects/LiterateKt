@@ -10,6 +10,7 @@ typealias LineFeed = Feed<Line>
 
 data class CompileUnit(val scope: String, val sourceSet: String, val namespace: String)
 const val README: Path = "README.md"
+const val LITERATE_KOTLIN = "Literate Kotlin"
 
 /**
  * Intrinsic things used to do markdown - project structure generation
